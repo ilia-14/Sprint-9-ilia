@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"sync"
@@ -22,9 +23,9 @@ func generateRandomElements(size int) []int {
 }
 
 // maximum returns the maximum number of elements.
-func maximum(data []int) int {
+func maximum(data []int) (int, error) {
 	if len(data) == 0 {
-		panic("Пустой срез предоставлен.")
+		return 0, errors.New("пустой срез предоставлен")
 	}
 	maxValue := data[0]
 	for _, num := range data {
@@ -32,14 +33,14 @@ func maximum(data []int) int {
 			maxValue = num
 		}
 	}
-	return maxValue
+	return maxValue, nil
 }
 
 // maxChunks returns the maximum number of elements in a chunks.
-func maxChunks(data []int) int {
+func maxChunks(data []int) (int, error) {
 	size := len(data)
 	if size == 0 {
-		panic("Empty slice provided.")
+		return 0, errors.New("пустой срез предоставлен")
 	}
 
 	chunkSize := size / CHUNKS
@@ -58,7 +59,7 @@ func maxChunks(data []int) int {
 		wg.Add(1)
 		go func(chunk []int, i int) {
 			defer wg.Done()
-			maxValues[i] = maximum(chunk)
+			maxValues[i], _ = maximum(chunk)
 		}(chunkData, i)
 	}
 
@@ -70,7 +71,7 @@ func maxChunks(data []int) int {
 			globalMax = value
 		}
 	}
-	return globalMax
+	return globalMax, nil
 }
 
 func main() {
@@ -79,13 +80,13 @@ func main() {
 
 	fmt.Println("Ищем максимальное значение в один поток")
 	startTime := time.Now()
-	maxSingleThread := maximum(numbers)
+	maxSingleThread, _ := maximum(numbers)
 	elapsed := time.Since(startTime).Milliseconds()
 	fmt.Printf("Максимальное значение элемента: %d\nВремя поиска: %d ms\n", maxSingleThread, elapsed)
 
 	fmt.Printf("Ищем максимальное значение в %d потоков\n", CHUNKS)
 	startTime = time.Now()
-	maxMultiThread := maxChunks(numbers)
+	maxMultiThread, _ := maxChunks(numbers)
 	elapsed = time.Since(startTime).Milliseconds()
 	fmt.Printf("Максимальное значение элемента: %d\nВремя поиска: %d ms\n", maxMultiThread, elapsed)
 }
