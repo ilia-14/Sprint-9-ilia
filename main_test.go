@@ -2,6 +2,8 @@ package main
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // Тест функции generateRandomElements
@@ -19,9 +21,7 @@ func TestGenerateRandomElements(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := generateRandomElements(tt.input)
-			if len(got) != tt.input {
-				t.Errorf("generateRandomElements(%d) length mismatch: want=%d, got=%d", tt.input, tt.input, len(got))
-			}
+			assert.Equalf(t, tt.want, len(got), "Длина результирующего массива отличается от ожидания")
 		})
 	}
 }
@@ -36,15 +36,17 @@ func TestMaximum(t *testing.T) {
 		args args
 		want int
 	}{
-		{"Пустой слайс", args{[]int{}}, 0},                   // Паника
-		{"Один элемент", args{[]int{1}}, 1},                  // Максимум очевиден
-		{"Несколько элементов", args{[]int{-1, 0, 3, 2}}, 3}, // Наибольшее число
+		{"Пустой слайс", args{[]int{}}, 0},
+		{"Один элемент", args{[]int{1}}, 1},
+		{"Малый набор", args{[]int{1, 2, 3}}, 3},
+		{"Средний набор", args{[]int{1, 2, 3, 4, 5}}, 5},
+		{"Большой набор", args{[]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}}, 10},
+		{"Максимальное число", args{[]int{1, 2, 3, 1000}}, 1000},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := maximum(tt.args.data); got != tt.want {
-				t.Errorf("maximum() = %v, want %v", got, tt.want)
-			}
+			got := maximum(tt.args.data)
+			assert.Equalf(t, tt.want, got, "Ошибка в поиске максимума: want=%v, got=%v", tt.want, got)
 		})
 	}
 }
@@ -59,16 +61,17 @@ func TestMaxChunks(t *testing.T) {
 		args args
 		want int
 	}{
-		{"Пустой слайс", args{[]int{}}, 0},                   // Паника
-		{"Один элемент", args{[]int{1}}, 1},                  // Максимум единстенной чисто
-		{"Несколько элементов", args{[]int{-1, 0, 3, 2}}, 3}, // Наибольшее число
-		{"Большое количество элементов", args{generateRandomElements(10)}, 9},
+		{"Пустой слайс", args{[]int{}}, 0},
+		{"Один элемент", args{[]int{1}}, 1},
+		{"Малый набор", args{[]int{1, 2, 3}}, 3},
+		{"Средний набор", args{[]int{1, 2, 3, 4, 5}}, 5},
+		{"Большой набор", args{[]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}}, 10},
+		{"Граничные числа", args{[]int{1, 1000, 500, 10000}}, 10000},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := maxChunks(tt.args.data); got != tt.want {
-				t.Errorf("maxChunks() = %v, want %v", got, tt.want)
-			}
+			got := maxChunks(tt.args.data)
+			assert.Equalf(t, tt.want, got, "Ошибка в поиске максимума в сегментах: want=%v, got=%v", tt.want, got)
 		})
 	}
 }

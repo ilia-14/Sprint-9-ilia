@@ -14,10 +14,9 @@ const (
 
 // generateRandomElements generates random elements.
 func generateRandomElements(size int) []int {
-	rand.Seed(time.Now().Unix()) // Засеваем генератор случайных чисел для уникальности
 	result := make([]int, size)
 	for i := range size {
-		result[i] = rand.Int() // Генерируем случайное целое число
+		result[i] = rand.Intn(SIZE) // Генерируем случайное целое число
 	}
 	return result
 }
@@ -25,7 +24,7 @@ func generateRandomElements(size int) []int {
 // maximum returns the maximum number of elements.
 func maximum(data []int) int {
 	if len(data) == 0 {
-		panic("Empty slice provided.")
+		panic("Пустой срез предоставлен.")
 	}
 	maxValue := data[0]
 	for _, num := range data {
@@ -54,17 +53,13 @@ func maxChunks(data []int) int {
 			endIndex = size // Последний кусок может быть меньше стандартного
 		}
 
+		chunkData := data[startIndex:endIndex]
+
 		wg.Add(1)
-		go func(start, end int) {
+		go func(chunk []int, i int) {
 			defer wg.Done()
-			localMax := data[start]
-			for j := start + 1; j < end; j++ {
-				if data[j] > localMax {
-					localMax = data[j]
-				}
-			}
-			maxValues[i] = localMax
-		}(startIndex, endIndex)
+			maxValues[i] = maximum(chunk)
+		}(chunkData, i)
 	}
 
 	wg.Wait()
