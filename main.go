@@ -17,7 +17,7 @@ const (
 func generateRandomElements(size int) []int {
 	result := make([]int, size)
 	for i := range size {
-		result[i] = rand.Intn(SIZE) // Генерируем случайное целое число
+		result[i] = rand.Intn(10000) // Генерируем случайное целое число
 	}
 	return result
 }
@@ -65,12 +65,7 @@ func maxChunks(data []int) (int, error) {
 
 	wg.Wait()
 
-	globalMax := maxValues[0]
-	for _, value := range maxValues {
-		if value > globalMax {
-			globalMax = value
-		}
-	}
+	globalMax, _ := maximum(maxValues)
 	return globalMax, nil
 }
 
